@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zachary.optimisticlock.mapper.GoodsInfoMapper">
+    <resultMap id="BaseResultMap"
+               type="com.zachary.optimisticlock.entity.GoodsInfo">
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="number" jdbcType="INTEGER" property="number"/>
+        <result column="price" jdbcType="DOUBLE" property="price"/>
+        <result column="version" jdbcType="INTEGER" property="version"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+		id, name, number,price, version
+	</sql>
+    <select id="findNumByGoodsId" parameterType="java.lang.String"
+            resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from t_goods_info
+        where id = #{goodsId,jdbcType=VARCHAR}
+    </select>
+    <!--<insert id="insert" parameterType="com.zachary.optimisticlock.entity.GoodsInfo">-->
+    <!--insert into t_goods_info-->
+    <!--(id, name, number,price,-->
+    <!--version)-->
+    <!--values (#{id,jdbcType=VARCHAR},-->
+    <!--#{name,jdbcType=VARCHAR},-->
+    <!--#{number,jdbcType=INTEGER},-->
+    <!--#{price,jdbcType=DOUBLE},-->
+    <!--#{version,jdbcType=INTEGER})-->
+    <!--</insert>-->
+
+
+    <update id="updateNumber">
+		update t_goods_info
+		set number = number - #{buys}
+		where id = #{goodsId}
+	</update>
+
+    <update id="updateNumberByVersion">
+		update t_goods_info
+		set number = number - #{buys},
+		version = version +1
+		where id = #{goodsId} and version = #{version}
+	</update>
+
+
+    <update id="updateNumberByStat">
+		update t_goods_info set
+		number = number - #{buys}
+		where id = #{goodsId} and number - #{buys} >=0
+	</update>
+
+
+</mapper>
